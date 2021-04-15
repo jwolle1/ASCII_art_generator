@@ -16,7 +16,7 @@ verbose = True
 
 ascii_palette = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
                  "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "!", "@",
-                 "#", "$", "%", "&", "(", ")", "-", "+", "=", "?", "/", ">", "<"]
+                 "#", "$", "%", "&", "(", "-", "+", "=", "?", "/", ">"]
 
 
 # ################ # ################ # ################ # ################ # ################
@@ -136,7 +136,10 @@ def draw_output_image(text, width_max, height_max, fnt, txt_clr, bg_clr, output_
         if verb:
             if i % 20 == 0 and i > 0:
                 print("  {:.0f}%".format((i + 1) / len(art_lines) * 100))
-        draw.text((20, int(round(i * height_max)) + 20), line, txt_clr, font=fnt)
+        for c, char in enumerate(line):
+            draw.text((int(round(c * width_max)) + 20 + int(round(width_max / 2)),
+                       int(round(i * height_max)) + 20 + int(round(height_max / 2))),
+                      char, txt_clr, font=fnt, anchor="mm")
     result = np.array(image)
     cv2.imwrite(output_fn, result)
     if verb:
