@@ -124,8 +124,9 @@ def generate_art(pixels, save, verb):
 
 def draw_output_image(text, width_max, height_max, fnt, txt_clr, bg_clr, output_fn, verb):
     art_lines = text.strip().split("\n")
-    canvas_width = int(len(art_lines[0]) * width_max) + 40
-    canvas_height = int(len(art_lines) * height_max) + 40
+    margin_size = int(round(len(art_lines[0]) * width_max * 0.008))
+    canvas_width = int(round(len(art_lines[0]) * width_max)) + margin_size * 2
+    canvas_height = int(round(len(art_lines) * height_max)) + margin_size * 2
     blank = np.zeros((canvas_height, canvas_width, 3), np.uint8)
     blank[:,:] = bg_clr
     if verb:
@@ -137,8 +138,8 @@ def draw_output_image(text, width_max, height_max, fnt, txt_clr, bg_clr, output_
             if i % 20 == 0 and i > 0:
                 print("  {:.0f}%".format((i + 1) / len(art_lines) * 100))
         for c, char in enumerate(line):
-            draw.text((int(round(c * width_max)) + 20 + int(round(width_max / 2)),
-                       int(round(i * height_max)) + 20 + int(round(height_max / 2))),
+            draw.text((int(round(c * width_max)) + margin_size + int(round(width_max / 2)),
+                       int(round(i * height_max)) + margin_size + int(round(height_max / 2))),
                       char, txt_clr, font=fnt, anchor="mm")
     result = np.array(image)
     cv2.imwrite(output_fn, result)
