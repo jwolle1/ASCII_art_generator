@@ -1,6 +1,6 @@
-import cv2
-from PIL import Image, ImageFont, ImageDraw, ImageOps
 import numpy as np
+import cv2
+from PIL import Image, ImageFont, ImageDraw
 
 
 input_file = "img/cheetah.jpg"
@@ -14,16 +14,14 @@ save_resized_image = False
 output_to_txt_file = False
 verbose = True
 
-ascii_palette = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
-                 "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "!", "@",
-                 "#", "$", "%", "&", "(", "-", "+", "=", "?", "/", ">"]
+ascii_palette = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&(-+=?/>"
 
 
 # ################ # ################ # ################ # ################ # ################
 
 
 def pixel_to_char(px):
-    smallest_diff = 1e6
+    smallest_diff = np.inf
     closest = None
     for ch in weight_dict:
         diff = abs(px - weight_dict[ch])
@@ -35,24 +33,24 @@ def pixel_to_char(px):
 
 def get_char_dimensions(arr):
     top = 0
-    for idx, cell in np.ndenumerate(arr):
-        if cell != 255:
-            top = idx[0]
+    for i, row in enumerate(arr):
+        if not np.all(row == 255):
+            top = i
             break
     bottom = 0
-    for idx, cell in np.ndenumerate(np.flip(arr)):
-        if cell != 255:
-            bottom = idx[0]
+    for i, row in enumerate(np.flip(arr)):
+        if not np.all(row == 255):
+            bottom = i
             break
     right = 0
-    for idx, cell in np.ndenumerate(np.rot90(arr, 1)):
-        if cell != 255:
-            right = idx[0]
+    for i, row in enumerate(np.rot90(arr, 1)):
+        if not np.all(row == 255):
+            right = i
             break
     left = 0
-    for idx, cell in np.ndenumerate(np.rot90(arr, 3)):
-        if cell != 255:
-            left = idx[0]
+    for i, row in enumerate(np.rot90(arr, 3)):
+        if not np.all(row == 255):
+            left = i
             break
     return np.shape(arr)[1] - left - right, np.shape(arr)[0] - top - bottom
 
@@ -61,11 +59,8 @@ def prepare_font(palette, sz, fnt):
     weight_dict_raw = {}
     width_max = 0
     height_max = 0
-    blank = np.zeros((sz * 2, sz, 3), np.uint8)
-    blank[:,:] = (255, 255, 255)
     for char in palette:
-        image = Image.fromarray(blank)
-        image = ImageOps.grayscale(image)
+        image = Image.new(mode="L", size=(sz, sz * 2), color=255)
         draw = ImageDraw.Draw(image)
         draw.text((3, 3), char, 0, font=fnt)
         char_img = np.array(image)
@@ -73,12 +68,12 @@ def prepare_font(palette, sz, fnt):
         for row in char_img:
             for cell in row:
                 tot += cell
+        weight_dict_raw.update({char: tot})
         w, h = get_char_dimensions(char_img)
         if w > width_max:
             width_max = w
         if h > height_max:
             height_max = h
-        weight_dict_raw.update({char: tot})
     weight_min = min(weight_dict_raw.values())
     weight_max = max(weight_dict_raw.values()) - weight_min
     wt_dict = {}
@@ -123,12 +118,12 @@ def generate_art(pixels, save, verb):
 
 
 def draw_output_image(text, width_max, height_max, fnt, txt_clr, bg_clr, output_fn, verb):
-    art_lines = text.strip().split("\n")
+    art_lines = text.strip().splitlines()
     margin_size = int(round(len(art_lines[0]) * width_max * 0.008))
     canvas_width = int(round(len(art_lines[0]) * width_max)) + margin_size * 2
     canvas_height = int(round(len(art_lines) * height_max)) + margin_size * 2
     blank = np.zeros((canvas_height, canvas_width, 3), np.uint8)
-    blank[:,:] = bg_clr
+    blank[:, :] = bg_clr
     if verb:
         print("\nDrawing image...")
     image = Image.fromarray(blank)
@@ -148,12 +143,9 @@ def draw_output_image(text, width_max, height_max, fnt, txt_clr, bg_clr, output_
     return
 
 
-font = ImageFont.truetype(font_path, text_size)
-
-weight_dict, char_width_max, char_height_max = prepare_font(ascii_palette, text_size, font)
-
-img = resize_image(input_file, scale_pct, char_width_max, char_height_max, save_resized_image, verbose)
-
-art = generate_art(img, output_to_txt_file, verbose)
-
-draw_output_image(art, char_width_max, char_height_max, font, text_color, bg_color, output_file, verbose)
+if __name__ == "__main__":
+    font = ImageFont.truetype(font_path, text_size)
+    weight_dict, char_width_max, char_height_max = prepare_font(list(ascii_palette), text_size, font)
+    img = resize_image(input_file, scale_pct, char_width_max, char_height_max, save_resized_image, verbose)
+    art = generate_art(img, output_to_txt_file, verbose)
+    draw_output_image(art, char_width_max, char_height_max, font, text_color, bg_color, output_file, verbose)

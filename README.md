@@ -10,7 +10,7 @@ Although the script's primary function is to produce ASCII art as an image file,
 
 ---
 
-Below are examples of high-, medium-, and low-character-density art the script can produce.
+Below are examples of high-, medium-, and low-resolution art the script can produce.
 
 ##### _Memorial Stadium (Lincoln, NE), 720x336 characters:_
 ![Memorial Stadium 720x336](img/memorial_stadium_output_720x336_resized.jpg)
