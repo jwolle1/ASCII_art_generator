@@ -10,10 +10,10 @@ Although the script's primary function is to produce ASCII art as an image file,
 
 ---
 
-Below are examples of high-, medium-, and low-resolution art the script can produce.
+Below are examples of low-, medium-, and high-resolution art the script can produce.
 
-##### _Memorial Stadium (Lincoln, NE), 720x336 characters:_
-![Memorial Stadium 720x336](img/memorial_stadium_output_720x336_resized.jpg)
+##### _Abe Lincoln, 144x117 characters. This was generated using the variable-width font Public Sans, designed in 2019 for federal government use:_
+![Abe Lincoln 120x86](img/abe_output_144x117.jpg)
 
 ---
 
@@ -23,8 +23,8 @@ _Original image credit: Shutterstock._
 
 ---
 
-##### _Abe Lincoln, 144x117 characters. This was generated using the variable-width font Public Sans, designed in 2019 for federal government use:_
-![Abe Lincoln 120x86](img/abe_output_144x117.jpg)
+##### _Memorial Stadium (Lincoln, NE), 720x336 characters:_
+![Memorial Stadium 720x336](img/memorial_stadium_output_720x336_resized.jpg)
 
 ---
 
